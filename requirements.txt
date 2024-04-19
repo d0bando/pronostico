@@ -1,0 +1,9 @@
+streamlit-authenticator==0.2.2
+deta==1.2.0
+numpy==1.25.2
+openpyxl==3.0.9
+pandas==2.0.3
+plotly==5.16.1
+plotly_express==0.4.1
+streamlit==1.25.0
+streamlit-book==0.7.5
