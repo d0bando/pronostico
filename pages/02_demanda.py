@@ -50,8 +50,8 @@ def main():
                 df_filtered = df_filtered[df_filtered["subcat_producto"] == subcat]
 
 
-            # if 'producto' not in st.session_state:
-            #     st.session_state['producto'] = df_filtered["cod_producto"].tolist()[0]
+            if 'producto' not in st.session_state:
+                st.session_state['producto'] = df_filtered["cod_producto"].tolist()[0]
             selected_prod = st.selectbox("Selecciona un código de producto", df_filtered["cod_producto"].tolist(), index=df_filtered["cod_producto"].tolist().index(st.session_state['producto']))
             st.session_state['producto'] = selected_prod
 
