@@ -52,7 +52,8 @@ def main():
 
                     # Crear el histograma de barras
                     histograma = go.Histogram(x=datos,
-                                    marker=dict(line=dict(color='black', width=1)))
+                                    marker=dict(line=dict(color='black', width=1))
+                                    ,marker_color='lightgreen')
 
                     # Definir el diseño del gráfico
                     layout = go.Layout(title=f'{nombre}',
@@ -68,17 +69,25 @@ def main():
                     time.sleep(intervalo_tiempo)
 
         producto = st.session_state["producto"]
-
-        col1, col2, col3 = st.columns([0.2, 0.5,0.3])
-        with col1:
-            columnas_demanda_mes = [col for col in saved_database.columns if col.startswith("demanda_mes")]
-            df_demanda = saved_database[saved_database["cod_producto"] == producto][columnas_demanda_mes].iloc[0].astype(int)
-            df_demanda.index = range(1,13)
-            df_demanda.index.name = "Períodos"
-            df_demanda.name = "Demanda"
-            st.dataframe(df_demanda, height=458, use_container_width=True)
         
-        with col2:
+        # Filtrar las columnas que empiezan con "demanda_mes"
+        columnas_demanda_mes = [col for col in saved_database.columns if col.startswith("demanda_mes")]
+        
+        # Obtener los datos de demanda para el producto especificado
+        df_demanda = saved_database[saved_database["cod_producto"] == producto][columnas_demanda_mes].iloc[0].astype(int)
+        
+        # Renombrar los índices y las columnas
+        df_demanda.index = [f"mes {num}" for num in range(1, 13)]
+        df_demanda.name = "Demanda"
+
+        # Convertir a DataFrame y transponer para mostrar horizontalmente
+        df_demanda_horizontal = df_demanda.to_frame().T
+
+        # Mostrar el DataFrame en Streamlit
+        st.dataframe(df_demanda_horizontal, use_container_width=True)
+
+        col1, col2 = st.columns([0.3, 0.7])
+        with col1:
             descripcion = saved_database[saved_database["cod_producto"] == producto]["desc_producto"].iloc[0]
             promedio = round(df_demanda.mean())
             stdev = round(df_demanda.std(),2)
@@ -94,10 +103,10 @@ def main():
             stats_df = pd.DataFrame(stats, index=[f"{producto}"]).T
             stats_df.index.name = "Código"
             st.dataframe(stats_df, use_container_width=True)
-
+        with col2:
             # fig = go.Figure(data=go.Scatter(x=[i for i in range(1,13)], y=df_demanda, mode='lines+markers'))
             # st.plotly_chart(fig, use_container_width=True)
-        with col3:
+            
             with st.form("my_form"):
                 # col1, col2, col3 = st.columns(3)
                 with st.container():
@@ -182,7 +191,7 @@ def main():
                 graficar_dist(meanh_con_creciyprom, stdh_con_creciystd,"Distribución con crecimiento")
             with col3:
                 graficar_dist(meanh_con_creciyprom_con_com, stdh_con_creciystd_con_com,"Distribución con crecimiento y competencia")
-            
+        
 if __name__ == '__main__':
     main()
     

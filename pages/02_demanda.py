@@ -89,13 +89,69 @@ def main():
         if aceptacion == "No":
                 container.error("Data histórica no apta para hacer pronóstico")
         with col2:
-            fig = go.Figure(data=[go.Bar(x=[i for i in range(1,13)], y=df_demanda)])
+            fig = go.Figure(data=[go.Bar(x=[i for i in range(1, 13)], y=df_demanda, text=df_demanda, textposition='auto', marker_color='lightgreen')])
+            fig.update_traces(texttemplate='%{text}', textposition='outside')
+            fig.update_layout(
+                title_text='Demanda Mensual',
+                xaxis_title='Mes',
+                yaxis_title='Demanda',
+                xaxis=dict(
+                    tickmode='linear',
+                    dtick=1
+                )
+            )
+
             st.plotly_chart(fig, use_container_width=True)
 
-            fig = go.Figure(data=go.Scatter(x=[i for i in range(1,13)], y=df_demanda, mode='lines+markers'))
+            fig = go.Figure(data=go.Scatter(
+                x=[i for i in range(1, 13)],
+                y=df_demanda,
+                mode='lines+markers+text',  # Añadir etiquetas
+                text=df_demanda,  # Mostrar los valores como etiquetas
+                textposition='top center',  # Posicionar las etiquetas
+                line=dict(color='green'),
+                marker=dict(color='green')
+            ))
+
+            fig.update_layout(
+                title_text='Demanda Mensual',
+                xaxis_title='Mes',
+                yaxis_title='Demanda',
+                xaxis=dict(
+                    tickmode='linear',
+                    dtick=1,  # Asegurar que el eje x tenga los números de 1 en 1
+                )
+            )
             st.plotly_chart(fig)
         with col3:
-            fig = go.Figure(data=go.Box(y=df_demanda, boxmean=True))
+            fig = go.Figure(data=go.Box(y=df_demanda, boxmean=True, name='', marker_color='green'))  # Cambiar el color a verde
+
+            # Añadir anotaciones para cada valor
+            for i, val in enumerate(df_demanda):
+                fig.add_annotation(
+                    x=0,
+                    y=val,
+                    text=str(val),
+                    showarrow=False,
+                    yshift=10,
+                    font=dict(color="red", size=10)  # Cambiar el color de la fuente a rojo
+                )
+
+            fig.update_layout(
+                title_text='Distribución de la Demanda',
+                yaxis_title='Demanda',
+                showlegend=False,  # Ocultar la leyenda
+                yaxis=dict(
+                    title='Valores de Demanda',
+                    zeroline=False
+                ),
+                xaxis=dict(
+                    tickmode='linear',
+                    dtick=1,
+                    showticklabels=False  # Ocultar etiquetas del eje X
+                )
+            )
+
             st.plotly_chart(fig, use_container_width=True)
 
             
